@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import it.polito.tdp.PremierLeague.model.Action;
 import it.polito.tdp.PremierLeague.model.Match;
 import it.polito.tdp.PremierLeague.model.Player;
@@ -75,6 +77,31 @@ public class PremierLeagueDAO {
 			}
 			conn.close();
 			return result;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Map<Integer, Action> listAllMatchActions(Match match, Map<Integer, Action> actions){
+		String sql = "SELECT * "
+				+ "FROM actions "
+				+ "WHERE actions.MatchID = ?";
+		Connection conn = DBConnect.getConnection();
+
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, match.getMatchID());
+			ResultSet res = st.executeQuery();
+			while (res.next()) {
+				Action action = new Action(res.getInt("PlayerID"),res.getInt("MatchID"),res.getInt("TeamID"),res.getInt("Starts"),res.getInt("Goals"),
+						res.getInt("TimePlayed"),res.getInt("RedCards"),res.getInt("YellowCards"),res.getInt("TotalSuccessfulPassesAll"),res.getInt("totalUnsuccessfulPassesAll"),
+						res.getInt("Assists"),res.getInt("TotalFoulsConceded"),res.getInt("Offsides"));			
+				actions.put(action.getPlayerID(), action) ;
+			}
+			conn.close();
+			return actions;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();

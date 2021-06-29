@@ -20,6 +20,7 @@ import javafx.scene.control.TextField;
 public class FXMLController {
 
 	private Model model;
+	private Match match;
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -47,17 +48,24 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-    	
+    	match = this.cmbMatch.getSelectionModel().getSelectedItem() ;
+    	model.creaGrafo(match);
+    	this.txtResult.appendText("#Vertici : " + model.getNVertici() + "\n");
+    	this.txtResult.appendText("#Archi : " + model.getNArchi() + "\n");
     }
 
     @FXML
     void doGiocatoreMigliore(ActionEvent event) {    	
-    	
+    	model.calcolaGiocatoreMigliore();
+    	this.txtResult.appendText("#PesoMigliore : " + Math.round(model.getPesoMigliore()*100)/100 + "\n#Giocatore : " + model.getGiocatoreMigliore()+"\n");
     }
     
     @FXML
     void doSimula(ActionEvent event) {
-
+    	int N = Integer.parseInt(this.txtN.getText()) ;
+    	this.model.run(N, match);
+    	this.txtResult.appendText("#Numero Espulsi : " + model.getHomeTeam()+"\n");
+    	this.txtResult.appendText("#Numero Espulsi : " + model.getAwayTeam());
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -73,5 +81,6 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	this.cmbMatch.getItems().addAll(model.listAllMatches()) ;
     }
 }
